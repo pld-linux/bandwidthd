@@ -23,7 +23,7 @@ Requires(post,preun):	/sbin/chkconfig
 Requires:	webserver
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define         _htmldir        /home/services/httpd/html/bandwidthd
+%define		_htmldir	/home/services/httpd/html/bandwidthd
 
 %description
 BandwidthD tracks usage of TCP/IP network subnets and builds html
@@ -76,17 +76,17 @@ rm -rf $RPM_BUILD_ROOT
 %post
 /sbin/chkconfig --add bandwidthd
 if [ -f /var/lock/subsys/bandwidthd ]; then
-        /etc/rc.d/init.d/bandwidthd restart 1>&2
+	/etc/rc.d/init.d/bandwidthd restart 1>&2
 else
-        echo "Run \"/etc/rc.d/init.d/bandwidthd start\" to start bandwidthd."
+	echo "Run \"/etc/rc.d/init.d/bandwidthd start\" to start bandwidthd."
 fi
 
 %preun
 if [ "$1" = "0" ]; then
-        if [ -f /var/lock/subsys/bandwidthd ]; then
-                /etc/rc.d/init.d/bandwidthd stop 1>&2
-        fi
-        /sbin/chkconfig --del bandwidthd
+	if [ -f /var/lock/subsys/bandwidthd ]; then
+	/etc/rc.d/init.d/bandwidthd stop 1>&2
+	fi
+	/sbin/chkconfig --del bandwidthd
 fi
 
 %files
