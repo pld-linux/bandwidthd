@@ -14,13 +14,13 @@ Patch0:		%{name}-makefile.patch
 Patch1:		%{name}-pgsql.patch
 Patch2:		%{name}-path.patch
 URL:		http://bandwidthd.sourceforge.net/
-BuildRequires:	libpng-devel
+BuildRequires:	autoconf
 BuildRequires:	gd-devel
 BuildRequires:	libpcap-devel
-BuildRequires:	autoconf
+BuildRequires:	libpng-devel
 PreReq:		rc-scripts
-Requires:	webserver
 Requires(post,preun):	/sbin/chkconfig
+Requires:	webserver
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define         _htmldir        /home/services/httpd/html/bandwidthd
@@ -35,7 +35,7 @@ utilization can be logged out at intervals of 3.3 minutes, 10 minutes,
 HTTP, TCP, UDP, ICMP, VPN, and P2P traffic are color coded.
 
 %description -l pl
-BandwidthD ¶ledzi u¿ycie sieci TCP/IP i buduje pliki html
+BandwidthD ¶ledzi u¿ycie sieci TCP/IP i buduje pliki HTML
 wy¶wietlaj±ce ruch sieciowy. Wykresy pokazuj± IP u¿ytkowników i
 domy¶lnie wy¶wietlaj± zu¿ycie na przestrzeni 2, 8, 40 i 400 dni.
 Ponadto udzia³ ka¿dego adresu IP w ruchu sieciowym mo¿e byæ zapisywany
