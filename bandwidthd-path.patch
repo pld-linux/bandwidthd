@@ -1,0 +1,153 @@
+diff -urN bandwidthd-2.0.1/bandwidthd.c bandwidthd-2.0.1-new/bandwidthd.c
+--- bandwidthd-2.0.1/bandwidthd.c	2005-01-11 22:27:26.000000000 +0100
++++ bandwidthd-2.0.1-new/bandwidthd.c	2005-01-18 21:42:56.000000000 +0100
+@@ -209,20 +209,20 @@
+ 	{
+ 	FILE *pidfile;
+ 
+-	pidfile = fopen("/var/run/bandwidthd.pid", "wt");
++	pidfile = fopen(PIDFILE, "wt");
+ 	if (pidfile) 
+ 		{
+ 		if (fprintf(pidfile, "%d\n", pid) == 0) 
+ 			{
+-			syslog(LOG_ERR, "Bandwidthd: failed to write '%d' to /var/run/bandwidthd.pid", pid);
++			syslog(LOG_ERR, "Bandwidthd: failed to write '%d' to %s", pid, PIDFILE);
+ 			fclose(pidfile);
+-			unlink("/var/run/bandwidthd.pid");
++			unlink(PIDFILE);
+ 			}
+ 		else
+ 			fclose(pidfile);		
+ 		}
+ 	else
+-		syslog(LOG_ERR, "Could not open /var/run/bandwidthd.pid for write");
++		syslog(LOG_ERR, "Could not open %s for write", PIDFILE);
+ 	}
+ 
+ 
+@@ -254,23 +254,23 @@
+ 	config.sensor_id = "unset";  
+ 
+ 	openlog("bandwidthd", LOG_CONS, LOG_DAEMON);
++	chdir(WWWROOT);
+ 
+-	if (stat("./etc/bandwidthd.conf", &StatBuf))
++	if (stat(CONFIG, &StatBuf))
+ 		{
+-		chdir(INSTALL_DIR);
+-		if (stat("./etc/bandwidthd.conf", &StatBuf))
++		if (stat(CONFIG, &StatBuf))
+ 			{
+-			printf("Cannot find ./etc/bandwidthd.conf or %s/etc/bandwidthd.conf\n", INSTALL_DIR);
+-			syslog(LOG_ERR, "Cannot find ./etc/bandwidthd.conf or %s/etc/bandwidthd.conf", INSTALL_DIR);
++			printf("Cannot find %s\n", CONFIG);
++			syslog(LOG_ERR, "Cannot find %s", CONFIG);
+ 			exit(1);
+ 			}
+ 		}
+ 
+-	bdconfig_in = fopen("./etc/bandwidthd.conf", "rt");
++	bdconfig_in = fopen(CONFIG, "rt");
+ 	if (!bdconfig_in)
+ 		{
+-		syslog(LOG_ERR, "Cannot open bandwidthd.conf");
+-		printf("Cannot open ./etc/bandwidthd.conf\n");
++		syslog(LOG_ERR, "Cannot open %s", CONFIG);
++		printf("Cannot open %s\n", CONFIG);
+ 		exit(1);
+ 		}
+ 	bdconfig_parse();
+@@ -333,10 +333,10 @@
+ 
+ 	if (config.graph)
+ 		{
+-		bd_CollectingData("htdocs/index.html");
+-		bd_CollectingData("htdocs/index2.html");
+-		bd_CollectingData("htdocs/index3.html");
+-		bd_CollectingData("htdocs/index4.html");
++		bd_CollectingData("index.html");
++		bd_CollectingData("index2.html");
++		bd_CollectingData("index3.html");
++		bd_CollectingData("index4.html");
+ 		}
+ 
+ 	/* detach from console. */
+diff -urN bandwidthd-2.0.1/bandwidthd.h bandwidthd-2.0.1-new/bandwidthd.h
+--- bandwidthd-2.0.1/bandwidthd.h	2005-01-11 22:15:49.000000000 +0100
++++ bandwidthd-2.0.1-new/bandwidthd.h	2005-01-19 20:15:27.168848712 +0100
+@@ -100,6 +100,7 @@
+ 
+ #define DB_PGSQL 1
+ 
++#define PIDFILE	"/var/run/bandwidthd.pid"
+ struct config
+ 	{
+ 	char *dev;
+diff -urN bandwidthd-2.0.1/graph.c bandwidthd-2.0.1-new/graph.c
+--- bandwidthd-2.0.1/graph.c	2005-01-11 22:15:49.000000000 +0100
++++ bandwidthd-2.0.1-new/graph.c	2005-01-18 21:44:37.000000000 +0100
+@@ -199,7 +199,7 @@
+ 	int SubnetCounter;
+ 	int Counter, tCounter;
+ 	time_t WriteTime;
+-	char filename[] = "./htdocs/index2.html";
++	char filename[] = "index2.html";
+ 	char *PeriodDesc;
+ 	
+ 	FILE *file;
+@@ -217,15 +217,15 @@
+ 	
+ 	if (config.tag == '1')
+ 		{
+-		if ((file = fopen("./htdocs/index.html", "wt")) == NULL)
++		if ((file = fopen("index.html", "wt")) == NULL)
+ 			{
+-			syslog(LOG_ERR, "Failed to open ./htdocs/index.html");
++			syslog(LOG_ERR, "Failed to open %s/index.html", WWWROOT);
+ 			exit(1);
+ 			}
+ 		}
+ 	else
+ 		{
+-		filename[14] = config.tag;
++		filename[strlen(filename) - 6] = config.tag;
+ 		if ((file = fopen(filename, "wt")) == NULL)
+ 			{
+ 			syslog(LOG_ERR, "Failed to open %s", filename);
+@@ -307,7 +307,7 @@
+ 	for (SubnetCounter = 0; SubnetCounter < SubnetCount; SubnetCounter++)
+ 		{
+ 		HostIp2CharIp(SubnetTable[SubnetCounter].ip, Buffer1);
+-		sprintf(Buffer2, "./htdocs/Subnet-%c-%s.html", config.tag, Buffer1);
++		sprintf(Buffer2, "Subnet-%c-%s.html", config.tag, Buffer1);
+ 		file = fopen(Buffer2, "wt");
+ 		fprintf(file, "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
+ 		fprintf(file, "<HTML>\n<HEAD><TITLE>Bandwidthd - Subnet %s</TITLE>\n", Buffer1);
+@@ -411,12 +411,12 @@
+         PrepareXAxis(im2, timestamp);
+         PrepareYAxis(im2, YMax);
+ 
+-        sprintf(outputfilename, "./htdocs/%s-%c-S.png", CharIp, config.tag);
++        sprintf(outputfilename, "%s-%c-S.png", CharIp, config.tag);
+         OutputFile = fopen(outputfilename, "wb");    
+         gdImagePng(im, OutputFile);
+         fclose(OutputFile);
+ 
+-        sprintf(outputfilename, "./htdocs/%s-%c-R.png", CharIp, config.tag);
++        sprintf(outputfilename, "%s-%c-R.png", CharIp, config.tag);
+         OutputFile = fopen(outputfilename, "wb");
+         gdImagePng(im2, OutputFile);
+         fclose(OutputFile);
+@@ -424,9 +424,9 @@
+     else
+         {
+         // The graph isn't worth clutering up the web pages with
+-        sprintf(outputfilename, "./htdocs/%s-%c-R.png", CharIp, config.tag);
++        sprintf(outputfilename, "%s-%c-R.png", CharIp, config.tag);
+         unlink(outputfilename);
+-        sprintf(outputfilename, "./htdocs/%s-%c-S.png", CharIp, config.tag);
++        sprintf(outputfilename, "%s-%c-S.png", CharIp, config.tag);
+         unlink(outputfilename);
+         }
+ 

@@ -1,0 +1,4 @@
+# Customized setings for bandwidthd
+
+# Define nice level for bandwidthd
+SERVICE_RUN_NICE_LEVEL="+5"

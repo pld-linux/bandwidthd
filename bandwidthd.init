@@ -1,0 +1,74 @@
+#!/bin/sh
+#
+# bandwidthd	This shell script takes care of starting and stopping
+#		bandwidthd.
+#
+# chkconfig:	2345 60 60
+#
+# description:	BandwidthD tracks usage of TCP/IP network subnets and 
+#		builds html files with graphs to display utilization.
+#
+# processname:	bandwidthd
+# config:	/etc/bandwidthd.conf
+
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+# Get network config
+. /etc/sysconfig/network
+
+# Get service config
+[ -f /etc/sysconfig/bandwidthd ] && . /etc/sysconfig/bandwidthd
+
+# Check that networking is up.
+if is_yes "${NETWORKING}"; then
+	if [ ! -f /var/lock/subsys/network -a "$1" != stop -a "$1" != status ]; then
+		msg_network_down bandwidthd
+		exit 1
+	fi
+else
+	exit 0
+fi
+
+# Sanity check
+[ -f /etc/bandwidthd.conf ] || exit 0
+
+RETVAL=0
+# See how we were called.
+case "$1" in
+  start)
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/bandwidthd ]; then
+		msg_starting bandwidthd
+		daemon bandwidthd
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/bandwidthd
+	else
+		msg_already_running "bandwidthd"
+	fi
+	;;
+  stop)
+	if [ -f /var/lock/subsys/bandwidthd ]; then
+		msg_stopping "bandwidthd"
+		killproc bandwidthd
+		rm -f /var/lock/subsys/bandwidthd >/dev/null 2>&1
+	else
+		msg_not_running "bandwidthd"
+	fi
+	;;
+  status)
+	status bandwidthd
+	exit $?
+	;;
+  restart|force-reload)
+	$0 stop
+	$0 start
+	exit $?
+	;;
+  *)
+	msg_usage "$0 {start|stop|restart|force-reload|status}"
+	exit 3
+esac
+
+exit $RETVAL
