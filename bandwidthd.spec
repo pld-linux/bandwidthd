@@ -84,7 +84,7 @@ fi
 %preun
 if [ "$1" = "0" ]; then
 	if [ -f /var/lock/subsys/bandwidthd ]; then
-	/etc/rc.d/init.d/bandwidthd stop 1>&2
+		/etc/rc.d/init.d/bandwidthd stop 1>&2
 	fi
 	/sbin/chkconfig --del bandwidthd
 fi
@@ -95,7 +95,7 @@ fi
 %attr(755,root,root) %{_sbindir}/bandwidthd
 %dir %{_htmldir}
 %{_htmldir}/*
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/%{name}.conf
-%attr(755,root,root) /etc/rc.d/init.d/bandwidthd
-%config(noreplace) %verify(not size mtime md5) %attr(640,root,root) /etc/cron.d/bandwidthd
-/etc/sysconfig/bandwidthd
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}.conf
+%attr(754,root,root) /etc/rc.d/init.d/bandwidthd
+%config(noreplace) %verify(not md5 mtime size) %attr(640,root,root) /etc/cron.d/bandwidthd
+%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/bandwidthd
