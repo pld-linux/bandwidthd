@@ -5,7 +5,7 @@
 #
 # chkconfig:	2345 60 60
 #
-# description:	BandwidthD tracks usage of TCP/IP network subnets and 
+# description:	BandwidthD tracks usage of TCP/IP network subnets and
 #		builds html files with graphs to display utilization.
 #
 # processname:	bandwidthd
