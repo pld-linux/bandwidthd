@@ -18,8 +18,9 @@ BuildRequires:	autoconf
 BuildRequires:	gd-devel
 BuildRequires:	libpcap-devel
 BuildRequires:	libpng-devel
-PreReq:		rc-scripts
+BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	/sbin/chkconfig
+Requires:	rc-scripts
 Requires:	webserver
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -66,8 +67,8 @@ install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/bandwidthd
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/bandwidthd
 install %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}
 
-cat  << EOF > $RPM_BUILD_ROOT/etc/cron.d/bandwidthd
-0 0 * * *      root    /bin/kill -HUP \`cat /var/run/bandwidthd.pid\`
+cat  << 'EOF' > $RPM_BUILD_ROOT/etc/cron.d/bandwidthd
+0 0 * * *      root    /bin/kill -HUP `cat /var/run/bandwidthd.pid`
 EOF
 
 %clean
@@ -75,17 +76,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add bandwidthd
-if [ -f /var/lock/subsys/bandwidthd ]; then
-	/etc/rc.d/init.d/bandwidthd restart 1>&2
-else
-	echo "Run \"/etc/rc.d/init.d/bandwidthd start\" to start bandwidthd."
-fi
+%service bandwidthd restart
 
 %preun
 if [ "$1" = "0" ]; then
-	if [ -f /var/lock/subsys/bandwidthd ]; then
-		/etc/rc.d/init.d/bandwidthd stop 1>&2
-	fi
+	%service bandwidthd stop
 	/sbin/chkconfig --del bandwidthd
 fi
 
