@@ -1,5 +1,5 @@
 Summary:	Network traffic tracking tool
-Summary(pl):	NarzÍdzie do ∂ledzenia ruchu sieciowego
+Summary(pl.UTF-8):   Narzƒôdzie do ≈õledzenia ruchu sieciowego
 Name:		bandwidthd
 Version:	2.0.1
 Release:	0.1
@@ -35,14 +35,14 @@ utilization can be logged out at intervals of 3.3 minutes, 10 minutes,
 1 hour or 12 hours in cdf format, or to a backend database server.
 HTTP, TCP, UDP, ICMP, VPN, and P2P traffic are color coded.
 
-%description -l pl
-BandwidthD ∂ledzi uøycie sieci TCP/IP i buduje pliki HTML
-wy∂wietlaj±ce ruch sieciowy. Wykresy pokazuj± IP uøytkownikÛw i
-domy∂lnie wy∂wietlaj± zuøycie na przestrzeni 2, 8, 40 i 400 dni.
-Ponadto udzia≥ kaødego adresu IP w ruchu sieciowym moøe byÊ zapisywany
-w przedzia≥ach 3.3 minut, 10 minut, 1 godziny lub 12 godzin w formacie
+%description -l pl.UTF-8
+BandwidthD ≈õledzi u≈ºycie sieci TCP/IP i buduje pliki HTML
+wy≈õwietlajƒÖce ruch sieciowy. Wykresy pokazujƒÖ IP u≈ºytkownik√≥w i
+domy≈õlnie wy≈õwietlajƒÖ zu≈ºycie na przestrzeni 2, 8, 40 i 400 dni.
+Ponadto udzia≈Ç ka≈ºdego adresu IP w ruchu sieciowym mo≈ºe byƒá zapisywany
+w przedzia≈Çach 3.3 minut, 10 minut, 1 godziny lub 12 godzin w formacie
 cdf, albo zapisywany do bazy danych. Ruch HTTP, TCP, UDP, ICMP, VPN, i
-P2P jest kodowany w rÛønych kolorach.
+P2P jest kodowany w r√≥≈ºnych kolorach.
 
 %prep
 %setup -q
