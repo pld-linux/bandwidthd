@@ -1,5 +1,5 @@
 Summary:	Network traffic tracking tool
-Summary(pl.UTF-8):   Narzędzie do śledzenia ruchu sieciowego
+Summary(pl.UTF-8):	Narzędzie do śledzenia ruchu sieciowego
 Name:		bandwidthd
 Version:	2.0.1
 Release:	0.1
